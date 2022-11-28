@@ -1,4 +1,5 @@
 var char = [0, 0, 20, 20];
+var moveSpeed = 1;
 
 function drawAll()
   /*
@@ -7,6 +8,17 @@ function drawAll()
     Returns: None, loops itself
   */
 {
+  //moveBox
+  if (char[2] < canvas.width)
+  {
+    char[0] += moveSpeed;
+    char[2] += moveSpeed;
+  }
+  if (char[3] < canvas.height)
+  {
+    char[1] += moveSpeed;
+    char[3] += moveSpeed;
+  }
   //draw box
   context.clearRect(0, 0, canvas.width, canvas.height);
   context.fillStyle = "#000000";
