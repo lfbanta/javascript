@@ -1,3 +1,5 @@
+var char = [0, 0, 20, 20];
+
 function drawAll()
   /*
     Purpose: draw some stuff
@@ -5,6 +7,11 @@ function drawAll()
     Returns: None, loops itself
   */
 {
+  //draw box
+  context.clearRect(0, 0, canvas.width, canvas.height);
+  context.fillStyle = "#000000";
+  context.fillRect(char[0], char[1], char[2] - char[0], char[3] - char[1]);
+  context.stroke();
   //loop the animation
   window.requestAnimationFrame(drawAll);
 }
