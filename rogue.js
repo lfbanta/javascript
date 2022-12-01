@@ -1,21 +1,40 @@
-var char = [0, 0, 20, 20];
-var moveSpeed = 20;
+var char = [0, 0, 30, 30];
+var moveSpeed = 30;
 var moveDelay = 150;
 var lastMoved = 0;
+var moveKeys = ['w', 'a', 's', 'd', 'arrowup', 'arrowleft', 'arrowdown', 'arrowright'];
 
 function myKeyDown(event)
+/*
+Purpose: process key presses
+Inputs: The event of a key being pressed
+Returns: None, calls a function based on the key pressed
+*/
 {
   console.log(event);
   keyPressed = event.key;
   keyPressed = keyPressed.toLowerCase();
   console.log(keyPressed);
+  if (moveKeys.includes(keyPressed))
+  {
+    moveChar(keyPressed);
+  }
+}
+
+function moveChar(direction)
+/*
+Purpose: move the character
+Inputs: the key that was pressed
+Returns: None, moves the main character
+*/
+{
   time = new Date();
   //limits how frequent you can move
   if (time.getTime() - moveDelay > lastMoved)
   {
     lastMoved = time.getTime();
     //moves the character
-    if(keyPressed == "w" || keyPressed == "arrowup")
+    if(direction == "w" || direction == "arrowup")
     {
       if(char[1] > 0)
       {
@@ -23,7 +42,7 @@ function myKeyDown(event)
         char[3] -= moveSpeed;
       }
     }
-    else if(keyPressed == "a" || keyPressed == "arrowleft")
+    else if(direction == "a" || direction == "arrowleft")
     {
       if(char[0] > 0)
       {
@@ -31,7 +50,7 @@ function myKeyDown(event)
         char[2] -= moveSpeed;
       }
     }
-    else if(keyPressed == "s" || keyPressed == "arrowdown")
+    else if(direction == "s" || direction == "arrowdown")
     {
       if(char[3] < canvas.height)
       {
@@ -39,7 +58,7 @@ function myKeyDown(event)
         char[3] += moveSpeed;
       }
     }
-    else if (keyPressed == "d" || keyPressed == "arrowright")
+    else if (direction == "d" || direction == "arrowright")
     {
       if(char[2] < canvas.width)
       {
@@ -73,7 +92,7 @@ console.log("window is %d by %d", windowWidth, windowHeight);
 //set the canvas and declare height and width based on the window
 canvas = document.getElementById("mainCanvas");
 canvas.width = windowWidth - 20;
-canvas.height = windowHeight - 20;
+canvas.height = windowHeight - 30;
 canvas.style.border = "1px solid black";
 
 //set up the context for the animation
