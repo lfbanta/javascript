@@ -5,6 +5,7 @@ var lastMoved = 0;
 var playerHealth = 10;
 var moveKeys = ['w', 'a', 's', 'd', 'arrowup', 'arrowleft', 'arrowdown', 'arrowright'];
 var enemies = []
+var viableMoves = []
 
 class Enemy{
 
@@ -18,9 +19,47 @@ class Enemy{
     this.y2 = y1 + blockSize;
   }
 
+  checkCollision()
+  {
+    var i, enemy;
+    var possibleMoves = ['down', 'up', 'right', 'left'];
+    for (i=0; i < enemies.length; i++)
+    {
+      enemy = enemies[i]
+      if (enemy != this)
+      {
+        if (enemy.x1 == this.x1)
+        {
+          if (enemy.y1 + blockSize == this.y1)
+          {
+            possibleMoves.splice(1, 1);
+          }
+          else if (enemy.y1 - blockSize == this.y1)
+          {
+            possibleMoves.splice(0, 1);
+          }
+        }
+        else if (enemy.y1 == this.y1)
+        {
+          if (enemy.x1 + blockSize == this.x1)
+          {
+            possibleMoves.splice(3, 1);
+          }
+          else if (enemy.x1 - blockSize == this.x1)
+          {
+            possibleMoves.splice(2, 1);
+          }
+        }
+      }
+    }
+    return possibleMoves
+  }
+
   takeAction(){
-    //Probably do some stuff to detect where they would need to move, and if they don,t attack the player
-    if (this.x1 < char[0])
+    viableMoves = this.checkCollision();
+    console.log(viableMoves);
+    //Attack the character, move if can't
+    if (this.x1 < char[0] && viableMoves.includes('right'))
     {
       
       console.log('detecting the location is left')
@@ -39,7 +78,8 @@ class Enemy{
         this.attack('right');
       }
     }
-    else if (this.x1 > char[0])
+    // I have no clue why only changing the first one made everything else work
+    else if (this.x1 > char[0] && viableMoves.includes('left'))
     {
       console.log('detecting the location is right')
       if (this.x1 - char[0] <= this.range && this.y1 == char[1])
@@ -52,7 +92,7 @@ class Enemy{
         this.x2 -= blockSize;
       }
     }
-    else if (this.y1 < char[1])
+    else if (this.y1 < char[1] && viableMoves.includes('down'))
     {
       console.log('detecting the location is above')
       if (char[1] - this.y1 <= this.range && this.x1 == char[0])
@@ -65,7 +105,7 @@ class Enemy{
         this.y2 += blockSize;
       }
     }
-    else if (this.y1 > char[1])
+    else if (this.y1 > char[1] && viableMoves.includes('up'))
     {
       console.log('detecting the location is down')
       if (this.y1 - char[1] <= this.range && this.x1 == char[0])
@@ -160,10 +200,11 @@ function runEnemies(listOfEnemies, screen)
       enemy.takeAction();
     }
   }
+  context.fillStyle = "#fb0015";
   for (i=0; i < listOfEnemies.length; i++)
   {
     enemy = listOfEnemies[i];
-    screen.fillRect(enemy.x1, enemy.y1, enemy.x2 - enemy.x1, enemy.y2 - enemy.y1);
+    context.fillRect(enemy.x1, enemy.y1, enemy.x2 - enemy.x1, enemy.y2 - enemy.y1);
   }
   
 }
@@ -177,7 +218,7 @@ function drawAll()
 {
   //draw box
   context.clearRect(0, 0, canvas.width, canvas.height);
-  context.fillStyle = "#000000";
+  context.fillStyle = "#00ff00";
   context.fillRect(char[0], char[1], char[2] - char[0], char[3] - char[1]);
   runEnemies(enemies, context);
   context.stroke();
@@ -197,7 +238,7 @@ canvas.style.border = "1px solid black";
 
 //set up the context for the animation
 context = canvas.getContext("2d");
-firstEnemy = new Enemy(5, 2, 1, 90, 240);
+firstEnemy = new Enemy(5, 2, 1, 180, 0);
 secondEnemy = new Enemy(5, 2, 1, 90, 0);
 enemies.push(firstEnemy)
 enemies.push(secondEnemy)
