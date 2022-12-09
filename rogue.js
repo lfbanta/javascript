@@ -4,8 +4,8 @@ var moveDelay = 300;
 var lastMoved = 0;
 var playerHealth = 10;
 var moveKeys = ['w', 'a', 's', 'd', 'arrowup', 'arrowleft', 'arrowdown', 'arrowright'];
-var enemies = []
-var viableMoves = []
+var enemies = [];
+var viableMoves = [];
 
 class Enemy{
 
@@ -127,6 +127,39 @@ class Enemy{
   }
 }
 
+function playerEnemyCollision()
+{
+  var i, enemy;
+  var possibleMoves = ['down', 'up', 'right', 'left'];
+  for (i=0; i < enemies.length; i++)
+  {
+    enemy = enemies[i]
+    if (char[0] == enemy.x1)
+    {
+      if (char[1] + blockSize == enemy.y1)
+      {
+        possibleMoves.splice(0, 1);
+      }
+      else if (char[1] - blockSize == enemy.y1)
+      {
+        possibleMoves.splice(1, 1);
+      }
+    }
+    else if (char[1] == enemy.y1)
+    {
+      if (char[0] + blockSize == enemy.x1)
+      {
+        possibleMoves.splice(2, 1);
+      }
+      else if (char[0] - blockSize == enemy.x1)
+      {
+        possibleMoves.splice(3, 1);
+      }
+    }
+  }
+  return possibleMoves
+}
+
 function myKeyDown(event)
 /*
 Purpose: process key presses
@@ -151,10 +184,11 @@ Inputs: the key that was pressed
 Returns: None, moves the main character
 */
 {
+  viableMoves = playerEnemyCollision();
   //moves the character
   if(direction == "w" || direction == "arrowup")
   {
-    if(char[1] > 0)
+    if(char[1] > 0 && viableMoves.includes('up'))
     {
       char[1] -= blockSize;
       char[3] -= blockSize;
@@ -162,7 +196,7 @@ Returns: None, moves the main character
   }
   else if(direction == "a" || direction == "arrowleft")
   {
-    if(char[0] > 0)
+    if(char[0] > 0 && viableMoves.includes('left'))
     {
       char[0] -= blockSize;
       char[2] -= blockSize;
@@ -170,7 +204,7 @@ Returns: None, moves the main character
   }
   else if(direction == "s" || direction == "arrowdown")
   {
-    if(char[3] < canvas.height)
+    if(char[3] < canvas.height && viableMoves.includes('down'))
     {
       char[1] += blockSize;
       char[3] += blockSize;
@@ -178,7 +212,7 @@ Returns: None, moves the main character
   }
   else if (direction == "d" || direction == "arrowright")
   {
-    if(char[2] < canvas.width)
+    if(char[2] < canvas.width && viableMoves.includes('right'))
     {
       char[0] += blockSize;
       char[2] += blockSize;
