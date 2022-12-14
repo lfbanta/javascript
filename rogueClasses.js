@@ -261,6 +261,96 @@ Returns: None, calls a function based on the key pressed
 	{
    		moveChar(keyPressed);
 	}
+	else if (keyPressed == " ")
+	{
+		attack()
+		charAttackSound.play()
+	}
+}
+
+function attack()
+{
+	charAttackSound.play()
+	var i, enemy;
+	if(directionFacing == "right")
+	{
+		console.log('detection direction facing')
+		for(i=0; i < enemies.length; i++)
+		{
+			enemy = enemies[i];
+			if (enemy.y1 == char[1])
+			{
+				console.log('detecting on same y')
+				if (enemy.x1 == char[2])
+				{
+					console.log('should attack')
+					enemy.health -= 5;
+					if(enemy.health <= 0)
+					{
+						enemies.splice(enemies.indexOf(enemy), 1)
+					}
+					break
+				}
+			}
+		}
+	}
+	else if(directionFacing == "left")
+	{
+		for(i=0; i<enemies.length; i++)
+		{
+			enemy = enemies[i];
+			if (enemy.y1 == char[1])
+			{
+				if (enemy.x2 == char[0])
+				{
+					enemy.health -= 5;
+					if(enemy.health <= 0)
+					{
+						enemies.splice(enemies.indexOf(enemy), 1)
+					}
+					break
+				}
+			}
+		}
+	}
+	else if(directionFacing == 'down')
+	{
+		for(i=0; i<enemies.length; i++)
+		{
+			enemy = enemies[i];
+			if (enemy.x1 == char[0])
+			{
+				if (char[3] == enemy.y1)
+				{
+					enemy.health -= 5;
+					if(enemy.health <= 0)
+					{
+						enemies.splice(enemies.indexOf(enemy), 1)
+					}
+					break
+				}
+			}
+		}
+	}
+	else
+	{
+		for(i=0; i<enemies.length; i++)
+		{
+			enemy = enemies[i];
+			if (enemy.x1 == char[0])
+			{
+				if (char[1] == enemy.y2)
+				{
+					enemy.health -= 5;
+					if(enemy.health <= 0)
+					{
+						enemies.splice(enemies.indexOf(enemy), 1)
+					}
+					break
+				}
+			}
+		}
+	}
 }
 
 function moveChar(direction)
@@ -274,6 +364,7 @@ Returns: None, moves the main character
 	//moves the character
 	if(direction == "w" || direction == "arrowup")
 	{
+		directionFacing = 'up'
 		if(char[1] > 0 && viableMoves.includes('up'))
     	{
       		char[1] -= blockSize;
@@ -282,6 +373,7 @@ Returns: None, moves the main character
   	}
   	else if(direction == "a" || direction == "arrowleft")
   	{
+		directionFacing = 'left'
     	if(char[0] > 0 && viableMoves.includes('left'))
     	{
       		char[0] -= blockSize;
@@ -290,6 +382,7 @@ Returns: None, moves the main character
   	}
   	else if(direction == "s" || direction == "arrowdown")
   	{
+		directionFacing = 'down'
 		if(char[3] < canvas.height && viableMoves.includes('down'))
     	{
       		char[1] += blockSize;
@@ -298,6 +391,7 @@ Returns: None, moves the main character
  	}
   	else if (direction == "d" || direction == "arrowright")
   	{
+		directionFacing = 'right'
     	if(char[2] < canvas.width && viableMoves.includes('right'))
     	{
     		char[0] += blockSize;

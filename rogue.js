@@ -16,6 +16,8 @@ var playerHealth = 10;
 var moveKeys = ['w', 'a', 's', 'd', 'arrowup', 'arrowleft', 'arrowdown', 'arrowright'];
 var enemies = [];
 var viableMoves = [];
+var charAttackSound = document.getElementById("charAttack");
+var directionFacing = 'right';
 
 function drawAll()
   /*
