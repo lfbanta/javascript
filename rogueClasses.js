@@ -209,7 +209,7 @@ class Enemy{
 	attack(direction)
 	{
 		//attack the player, only called if within range
-		console.log('ATTACK %s', direction)
+		playerHealth -= this.damage;
 	}
 }
 

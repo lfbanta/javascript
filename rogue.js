@@ -26,14 +26,21 @@ function drawAll()
     Returns: None, loops itself
   */
 {
-  //draw box
-  context.clearRect(0, 0, canvas.width, canvas.height);
-  context.fillStyle = "#00ff00";
-  context.fillRect(char[0], char[1], char[2] - char[0], char[3] - char[1]);
-  runEnemies(enemies, context);
-  context.stroke();
-  //loop the animation
-  window.requestAnimationFrame(drawAll);
+  if(playerHealth > 0)
+  {
+    //draw box
+    context.clearRect(0, 0, canvas.width, canvas.height);
+    context.fillStyle = "#00ff00";
+    context.fillRect(char[0], char[1], char[2] - char[0], char[3] - char[1]);
+    runEnemies(enemies, context);
+    context.stroke();
+    //loop the animation
+    window.requestAnimationFrame(drawAll);
+  }
+  else{
+    alert("Game Over")
+    document.removeEventListener("keydown", myKeyDown)
+  }
 }
 
 //set up the context for the animation
