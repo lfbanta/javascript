@@ -18,11 +18,16 @@ var moveDelay = 300;
 var lastMoved = 0;
 var playerHealth = 10;
 var maxHealth = 10;
+var damage = 5;
+var armor = 0;
 var moveKeys = ['w', 'a', 's', 'd', 'arrowup', 'arrowleft', 'arrowdown', 'arrowright'];
 var enemies = [];
 var viableMoves = [];
 var charAttackSound = document.getElementById("charAttack");
 var directionFacing = 'right';
+var onscreenBuffs = [];
+var buffType;
+var buffStrength;
 
 function drawAll()
   /*
@@ -41,7 +46,8 @@ function drawAll()
     context.fillRect(1, 1, gameBorderWidth, gameBorderHeight);
     context.fillStyle = "#00ff00";
     context.fillRect(char[0], char[1], char[2] - char[0], char[3] - char[1]);
-    runEnemies(enemies, context);
+    runBuffs();
+    runEnemies(enemies);
     drawHealthbar()
     context.stroke();
     //loop the animation

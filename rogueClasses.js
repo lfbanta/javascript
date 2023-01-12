@@ -1,3 +1,31 @@
+class Buff{
+	constructor(buffType, value, x1, y1){
+		this.buffType = buffType;
+		this.value = value;
+		this.x1 = x1;
+		this.y1 = y1;
+	}
+
+	pickup(){
+		if (this.buffType == "heal"){
+			playerHealth += this.value;
+			if (playerHealth > maxHealth){
+				playerHealth = maxHealth
+			}
+		}
+		else if (this.buffType == "health up"){
+			maxHealth += this.value;
+			playerHealth += this.value;
+		}
+		else if (this.buffType == "damage up"){
+			damage += this.value;
+		}
+		else {
+			armor += this.value;
+		}
+	}
+}
+
 class Enemy{
 
 	constructor(health, damage, range, x1, y1){
@@ -11,7 +39,7 @@ class Enemy{
 		this.dontMove = NaN;
 		this.reset = true;
 	}
-  
+
 	checkCollision()
 	{
 	  	var i, enemy;
@@ -70,12 +98,10 @@ class Enemy{
 	{
 		this.reset = true
 	  	viableMoves = this.checkCollision();
-	  	console.log(viableMoves);
 		var moved = false;
 	  	//Attack the character, move if can't
 	  	if (this.x1 < char[0] && moved == false && this.dontMove != 'right')
 	  	{
-			console.log('detecting the location is left')
 			if (this.y1 != char[1] || char[0] - this.x1 > this.range)
 			{
 				if(viableMoves.includes('right'))
@@ -105,7 +131,6 @@ class Enemy{
 		}
 	  	if (this.x1 > char[0] && moved == false && this.dontMove != 'left')
 	  	{
-			console.log('detecting the location is right')
 			if (this.y1 != char[1] || this.x1 - char[0] > this.range)
 			{
 				if(viableMoves.includes('left'))
@@ -134,7 +159,6 @@ class Enemy{
 	  	}
 	  	if (this.y1 < char[1] && moved == false)
 	  	{
-			console.log('detecting the location is above')
 			if (this.x1 != char[0] || char[1] - this.y1 > this.range)
 			{
 				if(viableMoves.includes('down'))
@@ -168,7 +192,6 @@ class Enemy{
 	  	}
 	  	if (this.y1 > char[1] && moved == false)
 	  	{
-			console.log('detecting the location is down')
 			if (this.x1 != char[0] || this.y1 - char[1] > this.range)
 			{
 				if(viableMoves.includes('up'))
@@ -209,7 +232,46 @@ class Enemy{
 	attack(direction)
 	{
 		//attack the player, only called if within range
-		playerHealth -= this.damage;
+		playerHealth -= this.damage - armor;
+	}
+
+	die(){
+		enemies.splice(enemies.indexOf(this), 1)
+		if(Math.random() > 0.5){
+			buffType = Math.random()
+			if(buffType < 0.25){
+				buffType = "heal"
+				buffStrength = Math.floor(Math.random() * maxHealth) + 1
+			}
+			else if(buffType < 0.5){
+				buffType = "health up"
+				buffStrength = Math.floor(Math.random() * maxHealth) + 1
+			}
+			else if(buffType < 0.75){
+				buffType = "damage up"
+				buffStrength = Math.floor(Math.random() * 10) + 1
+			}
+			else{
+				buffType = "armor up"
+				buffStrength = Math.floor(Math.random() * 3) + 1
+			}
+			onscreenBuffs.push(new Buff(buffType, buffStrength, this.x1, this.y1))
+		}
+	}
+}
+
+function runBuffs(){
+	context.fillStyle = "#0000ff"
+	var i, buff;
+	for(i=0; i < onscreenBuffs.length; i++){
+		buff = onscreenBuffs[i];
+		if (char[0] == buff.x1 && char[1] == buff.y1){
+			buff.pickup();
+			onscreenBuffs.splice(onscreenBuffs.indexOf(buff), 1);
+		}
+		else{
+			context.fillRect(buff.x1, buff.y1, blockSize, blockSize)
+		}
 	}
 }
 
@@ -253,10 +315,8 @@ Inputs: The event of a key being pressed
 Returns: None, calls a function based on the key pressed
 */
 {
-	console.log(event);
 	keyPressed = event.key;
 	keyPressed = keyPressed.toLowerCase();
-	console.log(keyPressed);
 	if (moveKeys.includes(keyPressed))
 	{
    		moveChar(keyPressed);
@@ -274,20 +334,17 @@ function attack()
 	var i, enemy;
 	if(directionFacing == "right")
 	{
-		console.log('detection direction facing')
 		for(i=0; i < enemies.length; i++)
 		{
 			enemy = enemies[i];
 			if (enemy.y1 == char[1])
 			{
-				console.log('detecting on same y')
 				if (enemy.x1 == char[2])
 				{
-					console.log('should attack')
-					enemy.health -= 5;
+					enemy.health -= damage;
 					if(enemy.health <= 0)
 					{
-						enemies.splice(enemies.indexOf(enemy), 1)
+						enemy.die()
 					}
 					break
 				}
@@ -303,10 +360,10 @@ function attack()
 			{
 				if (enemy.x2 == char[0])
 				{
-					enemy.health -= 5;
+					enemy.health -= damage;
 					if(enemy.health <= 0)
 					{
-						enemies.splice(enemies.indexOf(enemy), 1)
+						enemy.die()
 					}
 					break
 				}
@@ -322,10 +379,10 @@ function attack()
 			{
 				if (char[3] == enemy.y1)
 				{
-					enemy.health -= 5;
+					enemy.health -= damage;
 					if(enemy.health <= 0)
 					{
-						enemies.splice(enemies.indexOf(enemy), 1)
+						enemy.die()
 					}
 					break
 				}
@@ -341,10 +398,10 @@ function attack()
 			{
 				if (char[1] == enemy.y2)
 				{
-					enemy.health -= 5;
+					enemy.health -= damage;
 					if(enemy.health <= 0)
 					{
-						enemies.splice(enemies.indexOf(enemy), 1)
+						enemy.die()
 					}
 					break
 				}
@@ -400,7 +457,7 @@ Returns: None, moves the main character
 	}
 }
 
-function runEnemies(listOfEnemies, screen)
+function runEnemies(listOfEnemies)
 {
 	time = new Date();
 	time = time.getTime();
