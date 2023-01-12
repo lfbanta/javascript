@@ -47,19 +47,19 @@ class Enemy{
 			}
 	  	}
 		// check the collision with the boundaries of the screen
-		if(this.x1 == 0)
+		if(this.x1 == 1)
 		{
 			possibleMoves.splice(possibleMoves.indexOf('left'), 1);
 		}
-		else if(this.x2 == canvas.width)
+		else if(this.x2 == gameBorderWidth + 1)
 		{
 			possibleMoves.splice(possibleMoves.indexOf('right'), 1);
 		}
-		if(this.y1 == 0)
+		if(this.y1 == 1)
 		{
 			possibleMoves.splice(possibleMoves.indexOf('up'), 1);
 		}
-		else if(this.y2 == canvas.height)
+		else if(this.y2 == gameBorderHeight + 1)
 		{
 			possibleMoves.splice(possibleMoves.indexOf('down'), 1);
 		}
@@ -365,7 +365,7 @@ Returns: None, moves the main character
 	if(direction == "w" || direction == "arrowup")
 	{
 		directionFacing = 'up'
-		if(char[1] > 0 && viableMoves.includes('up'))
+		if(char[1] > 1 && viableMoves.includes('up'))
     	{
       		char[1] -= blockSize;
       		char[3] -= blockSize;
@@ -374,7 +374,7 @@ Returns: None, moves the main character
   	else if(direction == "a" || direction == "arrowleft")
   	{
 		directionFacing = 'left'
-    	if(char[0] > 0 && viableMoves.includes('left'))
+    	if(char[0] > 1 && viableMoves.includes('left'))
     	{
       		char[0] -= blockSize;
       		char[2] -= blockSize;
@@ -383,7 +383,7 @@ Returns: None, moves the main character
   	else if(direction == "s" || direction == "arrowdown")
   	{
 		directionFacing = 'down'
-		if(char[3] < canvas.height && viableMoves.includes('down'))
+		if(char[3] < gameBorderHeight && viableMoves.includes('down'))
     	{
       		char[1] += blockSize;
       		char[3] += blockSize;
@@ -392,7 +392,7 @@ Returns: None, moves the main character
   	else if (direction == "d" || direction == "arrowright")
   	{
 		directionFacing = 'right'
-    	if(char[2] < canvas.width && viableMoves.includes('right'))
+    	if(char[2] < gameBorderWidth && viableMoves.includes('right'))
     	{
     		char[0] += blockSize;
      		char[2] += blockSize;
@@ -421,4 +421,13 @@ function runEnemies(listOfEnemies, screen)
     	context.fillRect(enemy.x1, enemy.y1, enemy.x2 - enemy.x1, enemy.y2 - enemy.y1);
   	}
   
+}
+
+function drawHealthbar(){
+	context.fillStyle = "#000000";
+	context.fillRect(0, 610, 202, 50)
+	context.fillStyle = "#ffffff";
+	context.fillRect(1, 611, 200, 48)
+	context.fillStyle = "#ff0000";
+	context.fillRect(1, 611, playerHealth/maxHealth * 200, 48)
 }
