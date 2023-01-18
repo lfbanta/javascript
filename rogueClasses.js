@@ -4,6 +4,18 @@ class Buff{
 		this.value = value;
 		this.x1 = x1;
 		this.y1 = y1;
+		if(this.buffType == "heal"){
+			this.sprite=document.getElementById("heal")
+		}
+		else if(this.buffType == "health up"){
+			this.sprite=document.getElementById("healthUp")
+		}
+		else if(this.buffType == "damage up"){
+			this.sprite=document.getElementById("damageUp")
+		}
+		else{
+			this.sprite=document.getElementById("armorUp")
+		}
 	}
 
 	pickup(){
@@ -28,7 +40,7 @@ class Buff{
 
 class Enemy{
 
-	constructor(health, damage, range, x1, y1){
+	constructor(health, damage, range, x1, y1, sprite){
 	  	this.health = health;
 	  	this.damage = damage;
 	  	this.range = range * blockSize;
@@ -38,6 +50,7 @@ class Enemy{
 	  	this.y2 = y1 + blockSize;
 		this.dontMove = NaN;
 		this.reset = true;
+		this.sprite = document.getElementById("enemyIdleSprite")
 	}
 
 	checkCollision()
@@ -232,7 +245,9 @@ class Enemy{
 	attack(direction)
 	{
 		//attack the player, only called if within range
-		playerHealth -= this.damage - armor;
+		let dealtDamage = this.damage - armor;
+		if(dealtDamage < 1){dealtDamage = 1;}
+		playerHealth -= dealtDamage;
 	}
 
 	die(){
@@ -245,15 +260,15 @@ class Enemy{
 			}
 			else if(buffType < 0.5){
 				buffType = "health up"
-				buffStrength = Math.floor(Math.random() * maxHealth) + 1
+				buffStrength = Math.floor(Math.random() * wave * 5) + 1
 			}
 			else if(buffType < 0.75){
 				buffType = "damage up"
-				buffStrength = Math.floor(Math.random() * 10) + 1
+				buffStrength = Math.floor(Math.random() * wave * 2) + 1
 			}
 			else{
 				buffType = "armor up"
-				buffStrength = Math.floor(Math.random() * 3) + 1
+				buffStrength = Math.floor(Math.random() * wave / 2) + 1
 			}
 			onscreenBuffs.push(new Buff(buffType, buffStrength, this.x1, this.y1))
 		}
@@ -270,7 +285,7 @@ function runBuffs(){
 			onscreenBuffs.splice(onscreenBuffs.indexOf(buff), 1);
 		}
 		else{
-			context.fillRect(buff.x1, buff.y1, blockSize, blockSize)
+			context.drawImage(buff.sprite, buff.x1, buff.y1, blockSize, blockSize)
 		}
 	}
 }
@@ -475,16 +490,60 @@ function runEnemies(listOfEnemies)
   	for (i=0; i < listOfEnemies.length; i++)
   	{
     	enemy = listOfEnemies[i];
-    	context.fillRect(enemy.x1, enemy.y1, enemy.x2 - enemy.x1, enemy.y2 - enemy.y1);
+    	context.drawImage(enemy.sprite, enemy.x1, enemy.y1, enemy.x2 - enemy.x1, enemy.y2 - enemy.y1);
   	}
   
 }
 
-function drawHealthbar(){
+function displayInfo(){
 	context.fillStyle = "#000000";
 	context.fillRect(0, 610, 202, 50)
 	context.fillStyle = "#ffffff";
 	context.fillRect(1, 611, 200, 48)
 	context.fillStyle = "#ff0000";
 	context.fillRect(1, 611, playerHealth/maxHealth * 200, 48)
+	context.fillStyle = "#000000"
+	context.font = "bold 30px Courier New"
+	let healthInfo = playerHealth.toString() + "/" + maxHealth.toString()
+	context.fillText(healthInfo, 210, 645)
+	let damageInfo = "Damage:" + damage.toString();
+	context.fillText(damageInfo, 500, 645);
+	let armorInfo = "Armor:" + armor.toString();
+	context.fillText(armorInfo, 900, 645);
+}
+
+function newEnemies(){
+	var i;
+	let enemyX, enemyY;
+	var enemyDamage, enemyHealth, maxEnemies;
+	if(wave < 6){
+		enemyDamage = wave;
+		enemyHealth = wave * 2 + 3;
+	}
+	else{
+		enemyDamage = wave * wave - wave - 5;
+		enemyHealth = wave * wave / 2 - 5
+	}
+	maxEnemies = wave * 2;
+	if(maxEnemies > 30){maxEnemies=30;}
+	for(i=0;i<maxEnemies;i++){
+		if(Math.random() > 0.5){
+			enemyX = Math.floor(Math.random() * gameBorderWidth / 30) * 30 + 1
+			enemyY = Math.floor(Math.random() * gameBorderHeight / 30) * 30 + 1
+			var x, enemy;
+			var goodSpawn = true;
+			for(x=0;x<enemies.length;x++){
+				enemy = enemies[x];
+				if (enemy.x1 == enemyX || char[0] == enemyX){
+					goodSpawn = false
+				}
+				else if(enemy.y1 == enemyY || char[1] == enemyY){
+					goodSpawn = false;
+				}
+			}
+			if(goodSpawn){
+				enemies.push(new Enemy(enemyHealth, enemyDamage, 1, enemyX, enemyY))
+			}
+		}
+	}
 }

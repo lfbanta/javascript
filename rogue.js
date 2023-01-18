@@ -13,13 +13,14 @@ var gameBorderHeight = 600;
 context = canvas.getContext("2d");
 
 var blockSize = 30;
-var char = [1, 601 - blockSize, blockSize + 1, 601];
+var charSprite = document.getElementById("charSprite")
+var char = [1, 1, blockSize + 1, blockSize + 1];
 var moveDelay = 300;
 var lastMoved = 0;
 var playerHealth = 10;
 var maxHealth = 10;
 var damage = 5;
-var armor = 0;
+var armor = 3;
 var moveKeys = ['w', 'a', 's', 'd', 'arrowup', 'arrowleft', 'arrowdown', 'arrowright'];
 var enemies = [];
 var viableMoves = [];
@@ -28,6 +29,28 @@ var directionFacing = 'right';
 var onscreenBuffs = [];
 var buffType;
 var buffStrength;
+var wave = 0;
+
+function startGame(){
+  blockSize = 30;
+  char = [1, 1, blockSize + 1, blockSize + 1];
+  moveDelay = 300;
+  lastMoved = 0;
+  playerHealth = 10;
+  maxHealth = 10;
+  damage = 5;
+  armor = 3;
+  moveKeys = ['w', 'a', 's', 'd', 'arrowup', 'arrowleft', 'arrowdown', 'arrowright'];
+  enemies = [];
+  viableMoves = [];
+  charAttackSound = document.getElementById("charAttack");
+  directionFacing = 'right';
+  onscreenBuffs = [];
+  wave = 0;
+  document.addEventListener("keydown", myKeyDown);
+  document.removeEventListener("keydown", startGame);
+  window.requestAnimationFrame(drawAll);
+}
 
 function drawAll()
   /*
@@ -38,6 +61,10 @@ function drawAll()
 {
   if(playerHealth > 0)
   {
+    if (enemies.length == 0){
+      wave += 1;
+      newEnemies()
+    }
     //draw box
     context.clearRect(0, 0, canvas.width, canvas.height);
     context.fillStyle = "#000000";
@@ -45,22 +72,26 @@ function drawAll()
     context.fillStyle = "#ffffff";
     context.fillRect(1, 1, gameBorderWidth, gameBorderHeight);
     context.fillStyle = "#00ff00";
-    context.fillRect(char[0], char[1], char[2] - char[0], char[3] - char[1]);
+    //context.fillRect(char[0], char[1], char[2] - char[0], char[3] - char[1]);
+    context.drawImage(charSprite, char[0], char[1], blockSize, blockSize)
     runBuffs();
     runEnemies(enemies);
-    drawHealthbar()
+    displayInfo()
     context.stroke();
     //loop the animation
     window.requestAnimationFrame(drawAll);
   }
   else{
-    alert("Game Over")
-    document.removeEventListener("keydown", myKeyDown)
+    context.clearRect(0, 0, canvas.width, canvas.height);
+    context.fillStyle = "#000000"
+    context.font = "bold 70px Courier New"
+    context.fillText("Game Over", 400, 300)
+    context.font = "bold 20px Courier New"
+    context.fillText("Press any key to start again", 420, 350)
+    document.removeEventListener("keydown", myKeyDown);
+    document.addEventListener("keydown", startGame);
   }
 }
-
-enemies.push(new Enemy(5, 2, 1, 181, 601 - blockSize))
-enemies.push(new Enemy(5, 2, 1, 91, 601 - blockSize))
 
 //allow for keybinds
 document.addEventListener("keydown", myKeyDown);
