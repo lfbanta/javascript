@@ -256,11 +256,11 @@ class Enemy{
 			buffType = Math.random()
 			if(buffType < 0.25){
 				buffType = "heal"
-				buffStrength = Math.floor(Math.random() * maxHealth) + 1
+				buffStrength = Math.floor(Math.random() * maxHealth * 2) + 1
 			}
 			else if(buffType < 0.5){
 				buffType = "health up"
-				buffStrength = Math.floor(Math.random() * wave * 5) + 1
+				buffStrength = Math.floor(Math.random() * wave * 10) + 1
 			}
 			else if(buffType < 0.75){
 				buffType = "damage up"
@@ -268,7 +268,7 @@ class Enemy{
 			}
 			else{
 				buffType = "armor up"
-				buffStrength = Math.floor(Math.random() * wave / 2) + 1
+				buffStrength = Math.floor(Math.random() * wave) + 1
 			}
 			onscreenBuffs.push(new Buff(buffType, buffStrength, this.x1, this.y1))
 		}
@@ -507,9 +507,11 @@ function displayInfo(){
 	let healthInfo = playerHealth.toString() + "/" + maxHealth.toString()
 	context.fillText(healthInfo, 210, 645)
 	let damageInfo = "Damage:" + damage.toString();
-	context.fillText(damageInfo, 500, 645);
+	context.fillText(damageInfo, 425, 645);
 	let armorInfo = "Armor:" + armor.toString();
-	context.fillText(armorInfo, 900, 645);
+	context.fillText(armorInfo, 725, 645);
+	let waveInfo = "Wave:" + wave.toString();
+	context.fillText(waveInfo, 1000, 645)
 }
 
 function newEnemies(){
@@ -520,9 +522,13 @@ function newEnemies(){
 		enemyDamage = wave;
 		enemyHealth = wave * 2 + 3;
 	}
-	else{
-		enemyDamage = wave * wave - wave - 5;
+	else if (wave < 10){
+		enemyDamage = Math.floor(wave * 2);
 		enemyHealth = wave * wave / 2 - 5
+	}
+	else{
+		enemyDamage = Math.floor(wave * wave / Math.sqrt(wave))
+		enemyHealth = wave * wave / 2
 	}
 	maxEnemies = wave * 2;
 	if(maxEnemies > 30){maxEnemies=30;}

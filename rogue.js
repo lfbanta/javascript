@@ -47,6 +47,7 @@ function startGame(){
   directionFacing = 'right';
   onscreenBuffs = [];
   wave = 0;
+  //allow keybinds
   document.addEventListener("keydown", myKeyDown);
   document.removeEventListener("keydown", startGame);
   window.requestAnimationFrame(drawAll);
@@ -86,15 +87,18 @@ function drawAll()
     context.fillStyle = "#000000"
     context.font = "bold 70px Courier New"
     context.fillText("Game Over", 400, 300)
-    context.font = "bold 20px Courier New"
-    context.fillText("Press any key to start again", 420, 350)
+    context.font = "bold 30px Courier New"
+    context.fillText("Press any key to start again", 350, 350)
     document.removeEventListener("keydown", myKeyDown);
     document.addEventListener("keydown", startGame);
   }
 }
 
-//allow for keybinds
-document.addEventListener("keydown", myKeyDown);
-
-//start animation
-window.requestAnimationFrame(drawAll);
+//splashScreen
+context.font = "bold 70px Courier New"
+context.fillText("Rogue?", 500, 200)
+context.font = "bold 30px Courier New"
+context.fillText("wasd or arrow keys to move", 400, 250)
+context.fillText("Space to attack", 475, 300)
+context.fillText("Press any key to begin", 425, 350)
+document.addEventListener("keydown", startGame);
